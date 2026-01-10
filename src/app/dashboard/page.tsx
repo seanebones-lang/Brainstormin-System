@@ -1,1 +1,1 @@
-// Remove supabase/auth. Same form + cards + console for ideas.
+<h1 className='text-4xl'>eleven AI Boardroom</h1><p>Powered exclusively by NextEleven</p><GenerateForm...>
