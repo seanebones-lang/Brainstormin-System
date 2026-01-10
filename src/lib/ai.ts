@@ -1,23 +1,5 @@
-// Same Grok + Panels prompt/schema, but REMOVE Supabase imports/calls.
-// Console.log(input/output) for debug.
-import OpenAI from 'openai';
-import { z } from 'zod';
-
-const openai = new OpenAI({
-  apiKey: process.env.XAI_API_KEY,
-  baseURL: 'https://api.x.ai/v1',
-});
-
-const IdeaSchema = z.object({ /* same + discussion_summary */ });
-
-export type Idea = z.infer<typeof IdeaSchema>;
-
-export async function generateIdeas(input: any): Promise<Idea[]> {
-  console.log('Generating w/ input:', input);  // Debug
-  // Full prompt (MIT Panels) as before
-  const prompt = `...`;  // Unchanged
-  const completion = await openai.chat.completions.create({ model: 'grok-beta', messages: [{role: 'user', content: prompt}] });
-  const ideas = z.array(IdeaSchema).parse(JSON.parse(completion.choices[0].message.content));
-  console.log('Generated ideas:', ideas);
-  return ideas;
-}
+// Same structure + prompt tweak:
+const panel1 = 'Use HUMOROUS RANDOM professor names that CHANGE EACH TIME (e.g., Prof. FiascoMcBrainstorm (Marketing), Dr. GizmoGuru (Eng), Lady PixelPirate (Design), etc. – funny personalities!). Propose 5 ideas.';
+const panel2 = 'Critique Panel1 w/ devilish humor from Skeptic squad.';
+const prompt = `eleven AI by NextEleven: SIMULATE ${panel1}... Output JSON w/ discussion_summary naming the funny profs & consensus.`;
+// Rest unchanged (Grok call/Zod)
