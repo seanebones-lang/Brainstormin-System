@@ -3,9 +3,6 @@ const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false, // Security: Remove X-Powered-By header
   
-  // Output configuration - use default instead of standalone for Vercel
-  output: undefined, // Let Vercel handle the output format
-  
   // Temporarily disable ESLint during build to allow deployment
   // TODO: Fix all linting errors and re-enable
   eslint: {
