@@ -1,22 +1,2 @@
-import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
-import './globals.css';
-
-const inter = Inter({ subsets: ['latin'] });
-
-export const metadata: Metadata = {
-  title: 'IdeaForge - AI App Ideas',
-  description: 'Generate scalable SaaS ideas',
-};
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return (
-    <html lang="en">
-      <body className={inter.className}>{children}</body>
-    </html>
-  );
-}
+export const metadata = { title: 'eleven AI Brainstorm | NextEleven', description: 'Powered by eleven – Humorous MIT-level idea panels.' };
+// Body: <footer className='mt-auto p-4 text-center text-sm text-gray-500'>AI by NextEleven</footer>
