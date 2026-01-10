@@ -1,2 +1,3 @@
-// Badge: <span>Consensus by eleven</span>
-// Discussion: 'eleven\'s Board: {idea.discussion_summary}'
+// Props: partial=false
+if (partial) return <div className='animate-pulse'>Generating eleven's consensus... <Typewriter text={partialText} /></div>;
+// Full render as before
