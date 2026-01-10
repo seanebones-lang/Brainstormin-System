@@ -73,4 +73,4 @@ pnpm vitest --coverage
 ## 📄 License
 MIT
 
-**Built with ❤️ by NextEleven**
+**Built with 🩸-n-⚡️ by NextEleven**
