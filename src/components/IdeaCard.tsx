@@ -1,1 +1,2 @@
-// Same + <details className='mt-2'><summary>Panel Discussion</summary><p className='text-xs p-2 bg-gray-50 rounded'>{idea.discussion_summary}</p></details>
+// Badge: <span>Consensus by eleven</span>
+// Discussion: 'eleven\'s Board: {idea.discussion_summary}'
