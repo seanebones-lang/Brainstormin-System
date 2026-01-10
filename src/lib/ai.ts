@@ -1,5 +1,19 @@
-// Same structure + prompt tweak:
-const panel1 = 'Use HUMOROUS RANDOM professor names that CHANGE EACH TIME (e.g., Prof. FiascoMcBrainstorm (Marketing), Dr. GizmoGuru (Eng), Lady PixelPirate (Design), etc. – funny personalities!). Propose 5 ideas.';
-const panel2 = 'Critique Panel1 w/ devilish humor from Skeptic squad.';
-const prompt = `eleven AI by NextEleven: SIMULATE ${panel1}... Output JSON w/ discussion_summary naming the funny profs & consensus.`;
-// Rest unchanged (Grok call/Zod)
+// Add stream mode
+async function* streamIdeas(input: any) {
+  // Same prompt + 'Output CHUNKED: STREAM_START\n{"ideas":[]} STREAM_IDEA{"title":"...","discussion_summary":"..." partial} IDEA_END\n... FINAL_JSON'
+  const stream = await openai.chat.completions.create({
+    model: 'grok-beta',
+    messages: [...],
+    stream: true,
+  });
+  let buffer = '';
+  for await (const chunk of stream) {
+    buffer += chunk.choices[0]?.delta?.content || '';
+    // Yield parsed partial ideas (Zod lenient)
+    yield parseChunks(buffer);
+  }
+}
+export async function generateIdeas(input: any, {stream = false} = {}) {
+  if (stream) return streamIdeas(input);
+  // Fallback non-stream
+}
