@@ -1,16 +1,23 @@
 import { z } from 'zod';
-import { generateIdeasSchema } from './xai';
+import {
+  createSessionRequestSchema,
+  generateIdeasRequestSchema,
+  addIdeaRequestSchema,
+} from '@/types';
 
-export const createSessionSchema = z.object({
-  topic: z.string().min(1).max(200),
-});
+/**
+ * @deprecated Use schemas from '@/types' instead
+ * These are kept for backwards compatibility
+ */
+export const createSessionSchema = createSessionRequestSchema;
 
-export const addIdeaSchema = z.object({
-  text: z.string().min(1).max(1000),
-});
+export const addIdeaSchema = addIdeaRequestSchema.omit({ sessionId: true });
 
-export const generateIdeasInSessionSchema = generateIdeasSchema.extend({
+export const generateIdeasInSessionSchema = generateIdeasRequestSchema.extend({
   numIdeas: z.number().min(1).max(10).optional().default(5),
 });
 
 export const summarizeSchema = z.object({});
+
+// Re-export voteIdeaRequestSchema for backward compatibility
+export { voteIdeaRequestSchema } from '@/types';
