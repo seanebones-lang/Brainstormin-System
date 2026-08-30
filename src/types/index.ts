@@ -135,6 +135,19 @@ export interface AIProviderConfig {
 }
 
 /**
+ * Idea template for preset prompts
+ */
+export interface IdeaTemplate {
+  id: string;
+  name: string;
+  description: string;
+  topic: string;
+  style?: string;
+  numIdeas?: number;
+  category: string;
+}
+
+/**
  * API response types
  */
 export class AppError extends Error {
