@@ -1,8 +1,56 @@
 /** @type {import('next').NextConfig} */
 import withBundleAnalyzer from '@next/bundle-analyzer';
+import withPWA from 'next-pwa';
 
 const bundleAnalyzer = withBundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
+});
+
+const withPWAConfig = withPWA({
+  dest: 'public',
+  register: true,
+  skipWaiting: true,
+  disable: process.env.NODE_ENV === 'development',
+  // Cache strategies
+  runtimeCaching: [
+    {
+      // Cache API routes
+      urlPattern: /^\/api\/.*/,
+      handler: 'NetworkFirst',
+      options: {
+        cacheName: 'api-cache',
+        expiration: {
+          maxEntries: 50,
+          maxAgeSeconds: 60 * 60, // 1 hour
+        },
+        networkTimeoutSeconds: 10,
+      },
+    },
+    {
+      // Cache static assets
+      urlPattern: /\.(?:js|css|png|jpg|jpeg|svg|woff2?)$/,
+      handler: 'CacheFirst',
+      options: {
+        cacheName: 'static-assets',
+        expiration: {
+          maxEntries: 100,
+          maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
+        },
+      },
+    },
+    {
+      // Cache fonts
+      urlPattern: /\.(?:woff|woff2)$/,
+      handler: 'CacheFirst',
+      options: {
+        cacheName: 'fonts',
+        expiration: {
+          maxEntries: 20,
+          maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
+        },
+      },
+    },
+  ],
 });
 
 const nextConfig = {
@@ -94,4 +142,5 @@ const nextConfig = {
   },
 };
 
-export default bundleAnalyzer(nextConfig);
+// Apply PWA wrapper first, then bundle analyzer
+export default bundleAnalyzer(withPWAConfig(nextConfig));
