@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import GenerateForm from '@/components/GenerateForm';
 import IdeaCard from '@/components/IdeaCard';
-import SettingsPanel from '@/components/SettingsPanel';
 import ExportImport from '@/components/ExportImport';
 import ThemeToggle from '@/components/ThemeToggle';
 import { useSettings } from '@/hooks/useSettings';
@@ -21,7 +20,6 @@ export default function DashboardPage() {
   const [error, setError] = useState<string | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [votes, setVotes] = useState<Record<string, number>>({});
-  const [settingsOpen, setSettingsOpen] = useState(false);
   const [sessions, setSessions] = useState<Session[]>([]);
   const abortControllerRef = useRef<AbortController | null>(null);
   
@@ -54,7 +52,7 @@ export default function DashboardPage() {
     
     if (!settings.apiKey) {
       setError('Please configure your API key in Settings first.');
-      setSettingsOpen(true);
+      window.location.href = '/settings';
       return;
     }
 
@@ -201,7 +199,6 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gradient-theme p-4 md:p-8">
-      <SettingsPanel isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} />
       <ExportImport 
         sessions={sessions} 
         onImportComplete={refreshSessions} 
@@ -216,16 +213,16 @@ export default function DashboardPage() {
             </h1>
             <div className="flex items-center gap-2">
               <ThemeToggle />
-              <button
-                onClick={() => setSettingsOpen(true)}
-                className="p-2 rounded-lg bg-white/80 hover:bg-white shadow-lg text-gray-600 hover:text-gray-900 dark:bg-gray-800/80 dark:hover:bg-gray-700 dark:text-gray-300 dark:hover:text-gray-100 transition"
-                aria-label="Open AI provider settings"
+              <a 
+                href="/settings"
+                className="p-2 rounded-lg bg-white/80 hover:bg-white dark:bg-gray-800/80 dark:hover:bg-gray-700 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100 transition"
+                aria-label="Open settings"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.065c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
-              </button>
+              </a>
             </div>
           </div>
           <p className="text-lg text-theme-secondary">
