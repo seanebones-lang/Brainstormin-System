@@ -5,6 +5,7 @@ import GenerateForm from '@/components/GenerateForm';
 import IdeaCard from '@/components/IdeaCard';
 import SettingsPanel from '@/components/SettingsPanel';
 import ExportImport from '@/components/ExportImport';
+import ThemeToggle from '@/components/ThemeToggle';
 import { useSettings } from '@/hooks/useSettings';
 import { getAllSessions } from '@/lib/sessionManager';
 import type { Idea, StreamChunk, GenerateIdeasRequest, Session } from '@/types';
@@ -199,7 +200,7 @@ export default function DashboardPage() {
   }, [sessionId]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 p-4 md:p-8">
+    <div className="min-h-screen bg-gradient-theme p-4 md:p-8">
       <SettingsPanel isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} />
       <ExportImport 
         sessions={sessions} 
@@ -214,9 +215,10 @@ export default function DashboardPage() {
               Idea Forge 🚀
             </h1>
             <div className="flex items-center gap-2">
+              <ThemeToggle />
               <button
                 onClick={() => setSettingsOpen(true)}
-                className="p-2 rounded-lg bg-white/80 hover:bg-white shadow-lg text-gray-600 hover:text-gray-900 transition"
+                className="p-2 rounded-lg bg-white/80 hover:bg-white shadow-lg text-gray-600 hover:text-gray-900 dark:bg-gray-800/80 dark:hover:bg-gray-700 dark:text-gray-300 dark:hover:text-gray-100 transition"
                 aria-label="Open AI provider settings"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -226,7 +228,7 @@ export default function DashboardPage() {
               </button>
             </div>
           </div>
-          <p className="text-lg text-gray-600">
+          <p className="text-lg text-theme-secondary">
             Generate innovative ideas powered by any OpenAI-compatible API
           </p>
         </header>
@@ -234,7 +236,7 @@ export default function DashboardPage() {
         {/* Error Display */}
         {error && (
           <div
-            className="bg-red-50 border border-red-200 text-red-800 px-6 py-4 rounded-xl shadow-lg"
+            className="bg-[rgb(var(--color-error-bg))] border border-[rgb(var(--color-error-border))] text-[rgb(var(--color-error-text))] px-6 py-4 rounded-xl shadow-lg"
             role="alert"
             aria-live="assertive"
           >
@@ -258,7 +260,7 @@ export default function DashboardPage() {
         {/* Ideas List */}
         <section aria-label="Generated ideas">
           {ideas.length === 0 && !isStreaming && !error && (
-            <div className="text-center py-16 text-gray-500">
+            <div className="text-center py-16 text-theme-tertiary">
               <p className="text-xl mb-2">No ideas yet</p>
               <p>Fill out the form above to start generating ideas!</p>
             </div>
@@ -266,8 +268,8 @@ export default function DashboardPage() {
 
           {isStreaming && ideas.length === 0 && (
             <div className="text-center py-16">
-              <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-600" />
-              <p className="mt-4 text-gray-600">Generating ideas...</p>
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[rgb(var(--color-accent-from))]" />
+              <p className="mt-4 text-theme-tertiary">Generating ideas...</p>
             </div>
           )}
 
@@ -288,8 +290,8 @@ export default function DashboardPage() {
 
           {isStreaming && ideas.length > 0 && (
             <div className="text-center py-8">
-              <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-purple-600" />
-              <p className="mt-2 text-gray-600">Generating more ideas...</p>
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[rgb(var(--color-accent-from))]" />
+              <p className="mt-2 text-theme-tertiary">Generating more ideas...</p>
             </div>
           )}
         </section>

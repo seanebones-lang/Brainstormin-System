@@ -2,14 +2,107 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Accessibility: Focus visible styles */
+/* ============================================================================
+   CSS Custom Properties for Theming
+   ============================================================================ */
 @layer base {
-  *:focus-visible {
-    @apply outline-2 outline-offset-2 outline-blue-600;
+  :root {
+    /* Light theme (default) */
+    --color-bg-primary: 255 255 255;          /* white */
+    --color-bg-secondary: 249 250 251;        /* gray-50 */
+    --color-bg-tertiary: 243 244 246;         /* gray-100 */
+    --color-bg-card: 255 255 255;             /* white */
+    --color-bg-gradient-from: 239 246 255;    /* blue-50 */
+    --color-bg-gradient-via: 245 243 255;     /* purple-50 */
+    --color-bg-gradient-to: 253 242 248;      /* pink-50 */
+    
+    --color-text-primary: 17 24 39;           /* gray-900 */
+    --color-text-secondary: 55 65 81;         /* gray-700 */
+    --color-text-tertiary: 107 114 128;       /* gray-500 */
+    --color-text-inverse: 255 255 255;        /* white */
+    
+    --color-border-primary: 229 231 235;      /* gray-200 */
+    --color-border-secondary: 209 213 219;    /* gray-300 */
+    --color-border-focus: 139 92 246;         /* purple-500 */
+    
+    --color-accent-from: 37 99 235;           /* blue-600 */
+    --color-accent-to: 147 51 234;            /* purple-600 */
+    --color-accent-hover-from: 29 78 216;     /* blue-700 */
+    --color-accent-hover-to: 126 34 206;      /* purple-700 */
+    
+    --color-success-bg: 240 253 244;          /* green-50 */
+    --color-success-text: 22 101 52;          /* green-800 */
+    --color-success-border: 187 247 208;      /* green-200 */
+    
+    --color-error-bg: 254 242 242;            /* red-50 */
+    --color-error-text: 153 27 27;            /* red-800 */
+    --color-error-border: 254 202 202;        /* red-200 */
+    
+    --color-warning-bg: 255 251 235;          /* amber-50 */
+    --color-warning-text: 146 64 14;          /* amber-800 */
+    --color-warning-border: 254 240 138;      /* amber-200 */
+    
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  }
+
+  .dark {
+    /* Dark theme */
+    --color-bg-primary: 17 24 39;             /* gray-900 */
+    --color-bg-secondary: 31 41 55;           /* gray-800 */
+    --color-bg-tertiary: 55 65 81;            /* gray-700 */
+    --color-bg-card: 31 41 55;                /* gray-800 */
+    --color-bg-gradient-from: 30 58 138;      /* blue-900 */
+    --color-bg-gradient-via: 88 28 135;       /* purple-900 */
+    --color-bg-gradient-to: 136 19 55;        /* pink-900 */
+    
+    --color-text-primary: 249 250 251;        /* gray-50 */
+    --color-text-secondary: 229 231 235;      /* gray-200 */
+    --color-text-tertiary: 156 163 175;       /* gray-400 */
+    --color-text-inverse: 17 24 39;           /* gray-900 */
+    
+    --color-border-primary: 55 65 81;         /* gray-700 */
+    --color-border-secondary: 75 85 99;       /* gray-600 */
+    --color-border-focus: 196 181 253;        /* purple-300 */
+    
+    --color-accent-from: 96 165 250;          /* blue-400 */
+    --color-accent-to: 196 181 253;           /* purple-300 */
+    --color-accent-hover-from: 129 177 252;   /* blue-300 */
+    --color-accent-hover-to: 211 200 254;     /* purple-200 */
+    
+    --color-success-bg: 20 83 45;             /* green-900 */
+    --color-success-text: 134 239 172;        /* green-300 */
+    --color-success-border: 22 101 52;        /* green-800 */
+    
+    --color-error-bg: 127 29 29;              /* red-900 */
+    --color-error-text: 252 165 165;          /* red-300 */
+    --color-error-border: 153 27 27;          /* red-800 */
+    
+    --color-warning-bg: 133 77 14;            /* amber-900 */
+    --color-warning-text: 253 224 71;         /* amber-300 */
+    --color-warning-border: 146 64 14;        /* amber-800 */
+    
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.3);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.4), 0 8px 10px -6px rgb(0 0 0 / 0.3);
   }
 }
 
-/* Accessibility: Screen reader only class */
+/* ============================================================================
+   Accessibility: Focus visible styles
+   ============================================================================ */
+@layer base {
+  *:focus-visible {
+    @apply outline-2 outline-offset-2 outline-purple-500;
+  }
+}
+
+/* ============================================================================
+   Accessibility: Screen reader only class
+   ============================================================================ */
 @layer utilities {
   .sr-only {
     position: absolute;
@@ -36,7 +129,9 @@
   }
 }
 
-/* Accessibility: Reduced motion support */
+/* ============================================================================
+   Accessibility: Reduced motion support
+   ============================================================================ */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -48,11 +143,85 @@
   }
 }
 
-/* Performance: Optimize font loading */
+/* ============================================================================
+   Performance: Optimize font loading
+   ============================================================================ */
 @layer base {
   body {
     font-family: var(--font-inter), system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    background-color: rgb(var(--color-bg-primary));
+    color: rgb(var(--color-text-primary));
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+}
+
+/* ============================================================================
+   Utility classes using CSS custom properties
+   ============================================================================ */
+@layer utilities {
+  .bg-gradient-theme {
+    background: linear-gradient(
+      to bottom right,
+      rgb(var(--color-bg-gradient-from)),
+      rgb(var(--color-bg-gradient-via)),
+      rgb(var(--color-bg-gradient-to))
+    );
+  }
+
+  .bg-card {
+    background-color: rgb(var(--color-bg-card));
+  }
+
+  .text-theme-primary {
+    color: rgb(var(--color-text-primary));
+  }
+
+  .text-theme-secondary {
+    color: rgb(var(--color-text-secondary));
+  }
+
+  .text-theme-tertiary {
+    color: rgb(var(--color-text-tertiary));
+  }
+
+  .border-theme {
+    border-color: rgb(var(--color-border-primary));
+  }
+
+  .shadow-theme-sm {
+    box-shadow: var(--shadow-sm);
+  }
+
+  .shadow-theme-md {
+    box-shadow: var(--shadow-md);
+  }
+
+  .shadow-theme-lg {
+    box-shadow: var(--shadow-lg);
+  }
+
+  .shadow-theme-xl {
+    box-shadow: var(--shadow-xl);
+  }
+
+  .btn-primary {
+    background: linear-gradient(to right, rgb(var(--color-accent-from)), rgb(var(--color-accent-to)));
+    color: rgb(var(--color-text-inverse));
+    transition: all 0.2s ease;
+  }
+
+  .btn-primary:hover {
+    background: linear-gradient(to right, rgb(var(--color-accent-hover-from)), rgb(var(--color-accent-hover-to)));
+    transform: scale(1.02);
+    box-shadow: var(--shadow-xl);
+  }
+
+  .btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
   }
 }
