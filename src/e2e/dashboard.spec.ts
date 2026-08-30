@@ -1,11 +1,9 @@
 import { test, expect } from '@playwright/test';
-import { injectAxe, checkA11y } from 'axe-playwright';
+import { AxeBuilder } from '@axe-core/playwright';
 
 test.describe('Dashboard Page', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/dashboard');
-    // Inject axe for accessibility testing
-    await injectAxe(page);
   });
 
   test('should load dashboard page', async ({ page }) => {
@@ -63,11 +61,11 @@ test.describe('Dashboard Page', () => {
   });
 
   test('should be accessible', async ({ page }) => {
-    // Run accessibility checks
-    await checkA11y(page, undefined, {
-      detailedReport: true,
-      detailedReportOptions: { html: true },
-    });
+    const results = await new AxeBuilder({ page })
+      .withTags(['wcag2a', 'wcag2aa'])
+      .analyze();
+
+    expect(results.violations).toHaveLength(0);
   });
 
   test('should be keyboard navigable', async ({ page }) => {

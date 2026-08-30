@@ -1,42 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { generateIdeas } from '@/lib/xai';
-import { generateIdeasRequestSchema, ValidationError, AIServiceError, RateLimitError } from '@/types';
+import { generateIdeasRequestSchema, ValidationError, AIServiceError } from '@/types';
 import { sanitizeTopic, sanitizeStyle } from '@/lib/sanitize';
-import { getRateLimitConfig, checkRateLimit } from '@/lib/rateLimit';
-import type { GenerateIdeasRequest, StreamChunk } from '@/types';
+import type { GenerateIdeasRequest, StreamChunk, AIProviderConfig } from '@/types';
 
 /**
  * POST /api/ideas/generate
- * Generate ideas using xAI Grok with SSE streaming
- * Implements rate limiting, input sanitization, and error handling
+ * Generate ideas using any OpenAI-compatible API with SSE streaming
+ * Accepts provider config in request body or headers
+ * This route is fully dynamic - no static generation
  */
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+export const fetchCache = 'force-no-store';
+
 export async function POST(req: NextRequest) {
   try {
-    // Rate limiting
-    const rateLimitConfig = getRateLimitConfig(req.nextUrl.pathname);
-    const rateLimitResult = await checkRateLimit(req, rateLimitConfig);
-    
-    if (!rateLimitResult.allowed) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: {
-            code: 'RATE_LIMIT_EXCEEDED',
-            message: 'Too many requests. Please try again later.',
-            retryable: true,
-            details: { retryAfter: rateLimitResult.retryAfter },
-            action: { type: 'retry' as const },
-          },
-        },
-        {
-          status: 429,
-          headers: {
-            'Retry-After': String(rateLimitResult.retryAfter || 60),
-          },
-        }
-      );
-    }
-
     // Parse and validate request body
     let body: unknown;
     try {
@@ -47,6 +25,27 @@ export async function POST(req: NextRequest) {
 
     // Validate with Zod schema
     const validated = generateIdeasRequestSchema.parse(body);
+
+    // Extract provider config from request (body or headers)
+    const providerConfig: AIProviderConfig = {
+      baseURL: (validated as { baseURL?: string }).baseURL || req.headers.get('x-ai-baseurl') || 'https://api.x.ai/v1',
+      apiKey: (validated as { apiKey?: string }).apiKey || req.headers.get('x-ai-apikey') || '',
+      model: (validated as { model?: string }).model || req.headers.get('x-ai-model') || 'grok-4-1-fast-reasoning',
+    };
+
+    if (!providerConfig.apiKey) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: {
+            code: 'MISSING_API_KEY',
+            message: 'API key is required. Provide it in request body or x-ai-apikey header.',
+            retryable: false,
+          },
+        },
+        { status: 400 }
+      );
+    }
 
     // Sanitize input
     const sanitizedTopic = sanitizeTopic(validated.topic);
@@ -78,9 +77,13 @@ export async function POST(req: NextRequest) {
           };
           controller.enqueue(encoder.encode(`data: ${JSON.stringify(statusChunk)}\n\n`));
 
+          // Import generateIdeas lazily inside the async function
+          const aiModule = await import('@/lib/ai');
+          const generateIdeas = aiModule.generateIdeas;
+
           // Generate ideas with timeout
           const generationPromise = (async () => {
-            for await (const chunk of generateIdeas(input, { stream: true })) {
+            for await (const chunk of generateIdeas(input, providerConfig, { stream: true })) {
               const streamChunk: StreamChunk = {
                 type: chunk.type,
                 data: chunk.data,
@@ -99,17 +102,14 @@ export async function POST(req: NextRequest) {
         } catch (error) {
           // Handle errors gracefully
           let errorMessage = 'Generation failed';
-          const errorCode = error instanceof AIServiceError ? error.code : 
-                           (error instanceof Error && error.message.includes('timeout')) ? 'TIMEOUT_ERROR' : 
-                           'GENERATION_ERROR';
 
           if (error instanceof AIServiceError) {
             errorMessage = error.message;
+          } else if (error instanceof Error && error.message.includes('timeout')) {
+            errorMessage = 'Request timeout';
           } else if (error instanceof Error) {
             errorMessage = error.message;
           }
-          
-          const retryable = error instanceof AIServiceError ? error.retryable : true;
 
           const errorChunk: StreamChunk = {
             type: 'error',
@@ -134,8 +134,8 @@ export async function POST(req: NextRequest) {
       },
     });
   } catch (error) {
-    // Handle validation and other errors
-    if (error instanceof ValidationError || error instanceof RateLimitError) {
+    // Handle validation errors
+    if (error instanceof ValidationError) {
       return NextResponse.json(
         {
           success: false,

@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { expect, afterEach, vi } from 'vitest';
+import { expect, afterEach, vi, beforeAll, afterAll } from 'vitest';
 import { cleanup } from '@testing-library/react';
 import * as matchers from '@testing-library/jest-dom/matchers';
 
@@ -26,10 +26,10 @@ vi.mock('next/navigation', () => ({
 }));
 
 // Mock environment variables
-process.env.XAI_API_KEY = 'test-xai-api-key';
-process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://test.supabase.co';
-process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'test-supabase-anon-key';
-process.env.NODE_ENV = 'test';
+vi.stubEnv('XAI_API_KEY', 'test-xai-api-key');
+vi.stubEnv('NEXT_PUBLIC_SUPABASE_URL', 'https://test.supabase.co');
+vi.stubEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY', 'test-supabase-anon-key');
+vi.stubEnv('NODE_ENV', 'test');
 
 // Suppress console errors in tests unless explicitly needed
 const originalError = console.error;

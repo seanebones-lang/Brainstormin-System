@@ -1,37 +1,36 @@
 /**
- * Input sanitization utilities
+ * Input sanitization utilities using DOMPurify (isomorphic)
  * Prevents XSS, injection attacks, and validates input
  */
 
+import DOMPurify from 'isomorphic-dompurify';
+
 /**
- * Sanitize HTML string (basic XSS prevention)
- * For production, use DOMPurify or similar library
+ * Sanitize HTML string using DOMPurify
+ * Safe for rendering in dangerouslySetInnerHTML
  */
 export function sanitizeHtml(input: string): string {
   if (typeof input !== 'string') {
     return '';
   }
 
-  // Basic HTML entity encoding
-  return input
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#x27;')
-    .replace(/\//g, '&#x2F;');
+  // Use DOMPurify to sanitize HTML, allowing only safe tags
+  return DOMPurify.sanitize(input, {
+    ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'a', 'p', 'br', 'ul', 'ol', 'li'],
+    ALLOWED_ATTR: ['href', 'target', 'rel'],
+  });
 }
 
 /**
- * Sanitize user input for display (removes HTML tags)
+ * Sanitize user input for display (removes HTML tags, returns plain text)
  */
 export function sanitizeText(input: string): string {
   if (typeof input !== 'string') {
     return '';
   }
 
-  // Remove HTML tags
-  return input.replace(/<[^>]*>/g, '').trim();
+  // Remove HTML tags and return plain text
+  return DOMPurify.sanitize(input, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] }).trim();
 }
 
 /**
@@ -52,11 +51,8 @@ export function sanitizeTopic(input: string): string {
     throw new Error('Topic must be less than 200 characters');
   }
 
-  // Remove potentially dangerous characters but allow normal text
-  // Allow: letters, numbers, spaces, common punctuation
-  const sanitized = trimmed.replace(/[<>\"']/g, '');
-
-  return sanitized;
+  // Use DOMPurify to sanitize
+  return DOMPurify.sanitize(trimmed, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
 }
 
 /**
@@ -81,10 +77,8 @@ export function sanitizeStyle(input: string | undefined): string | undefined {
     throw new Error('Style must be less than 100 characters');
   }
 
-  // Sanitize
-  const sanitized = trimmed.replace(/[<>\"']/g, '');
-
-  return sanitized;
+  // Use DOMPurify to sanitize
+  return DOMPurify.sanitize(trimmed, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
 }
 
 /**

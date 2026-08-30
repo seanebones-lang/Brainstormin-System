@@ -66,6 +66,10 @@ export const generateIdeasRequestSchema = z.object({
   numIdeas: z.number().int().min(1).max(20).default(10),
   style: z.string().max(100).optional(),
   sessionId: z.string().uuid().optional(),
+  // Optional provider config (can also be passed via headers)
+  baseURL: z.string().url().optional(),
+  apiKey: z.string().optional(),
+  model: z.string().optional(),
 });
 
 export type GenerateIdeasRequest = z.infer<typeof generateIdeasRequestSchema>;
@@ -122,7 +126,16 @@ export interface User {
 }
 
 /**
- * Error types
+ * AI Provider configuration for OpenAI-compatible APIs
+ */
+export interface AIProviderConfig {
+  baseURL: string;
+  apiKey: string;
+  model: string;
+}
+
+/**
+ * API response types
  */
 export class AppError extends Error {
   constructor(

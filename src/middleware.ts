@@ -2,8 +2,8 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 /**
- * Middleware for security headers, CORS, and request validation
- * Implements OWASP Top 10 2025 security standards
+ * Middleware for security headers and CORS
+ * Simplified for open-source local-first tool
  */
 
 // Allowed origins for CORS (configure via environment variables)
@@ -21,9 +21,10 @@ const securityHeaders = {
   'Strict-Transport-Security': process.env.NODE_ENV === 'production'
     ? 'max-age=31536000; includeSubDomains; preload'
     : '',
+  // CSP without unsafe-eval, allowing external APIs via connect-src
   'Content-Security-Policy': process.env.NODE_ENV === 'production'
-    ? "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.sentry-cdn.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://api.x.ai https://*.supabase.co https://*.sentry.io; frame-ancestors 'none'; base-uri 'self'; form-action 'self';"
-    : "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: https:; connect-src 'self' https://api.x.ai https://*.supabase.co; frame-ancestors 'self';",
+    ? "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://api.x.ai https://api.openai.com https://api.anthropic.com https://*.supabase.co https://*.sentry.io https:; frame-ancestors 'none'; base-uri 'self'; form-action 'self';"
+    : "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: https:; connect-src 'self' https:; frame-ancestors 'self';",
 };
 
 export function middleware(request: NextRequest) {
@@ -44,7 +45,7 @@ export function middleware(request: NextRequest) {
       if (origin && ALLOWED_ORIGINS.includes(origin)) {
         response.headers.set('Access-Control-Allow-Origin', origin);
         response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-        response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+        response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, x-ai-baseurl, x-ai-apikey, x-ai-model');
         response.headers.set('Access-Control-Max-Age', '86400'); // 24 hours
         response.headers.set('Access-Control-Allow-Credentials', 'true');
         return new NextResponse(null, { status: 204, headers: response.headers });

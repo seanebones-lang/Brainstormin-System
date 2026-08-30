@@ -2,22 +2,10 @@
 const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false, // Security: Remove X-Powered-By header
-  
-  // Temporarily disable ESLint during build to allow deployment
-  // TODO: Fix all linting errors and re-enable
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  
-  // Temporarily disable type checking during build
-  // TODO: Fix all type errors and re-enable
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-  
+
   // Performance optimizations
   experimental: {
-    optimizePackageImports: ['@supabase/supabase-js', 'openai'],
+    optimizePackageImports: ['openai'],
   },
 
   // Security headers (also handled in middleware, but this is a fallback)
@@ -70,6 +58,33 @@ const nextConfig = {
   // Environment variables validation (optional, better handled in lib/env.ts)
   env: {
     CUSTOM_KEY: process.env.CUSTOM_KEY,
+  },
+
+  // Exclude server-side only modules from client bundle
+  webpack: (config, { isServer }) => {
+    // Externalize openai and isomorphic-dompurify from both server and client bundles
+    config.externals = config.externals || [];
+    config.externals.push({
+      'openai': 'commonjs openai',
+      'isomorphic-dompurify': 'commonjs isomorphic-dompurify',
+      'dompurify': 'commonjs dompurify',
+    });
+    
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        net: false,
+        tls: false,
+        crypto: false,
+      };
+    }
+    return config;
+  },
+
+  // Force all API routes to be dynamic (no static generation)
+  async rewrites() {
+    return [];
   },
 };
 

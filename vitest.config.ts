@@ -34,7 +34,7 @@ export default defineConfig({
       include: ['src/**/*.{ts,tsx}'],
     },
     include: ['src/**/*.{test,spec}.{ts,tsx}'],
-    exclude: ['node_modules', '.next', 'dist', 'build'],
+      exclude: ['node_modules', '.next', 'dist', 'build', 'src/e2e/**'],
   },
   resolve: {
     alias: {

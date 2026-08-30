@@ -21,7 +21,10 @@ interface HealthCheckResponse {
  * GET /api/health
  * Health check endpoint for monitoring and load balancers
  * Returns 200 if healthy, 503 if unhealthy
+ * Force dynamic rendering to prevent static generation issues
  */
+export const dynamic = 'force-dynamic';
+
 export async function GET(_req: NextRequest): Promise<NextResponse<HealthCheckResponse | ApiResponse>> {
   const startTime = process.uptime();
   const checks: HealthCheckResponse['checks'] = {

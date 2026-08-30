@@ -13,7 +13,7 @@ describe('Sanitization Utilities', () => {
   describe('sanitizeHtml', () => {
     it('should escape HTML entities', () => {
       expect(sanitizeHtml('<script>alert("xss")</script>')).toBe(
-        '&lt;script&gt;alert(&quot;xss&quot;)&lt;/script&gt;'
+        ''
       );
     });
 
@@ -24,6 +24,14 @@ describe('Sanitization Utilities', () => {
     it('should handle non-string input', () => {
       expect(sanitizeHtml(null as unknown as string)).toBe('');
       expect(sanitizeHtml(123 as unknown as string)).toBe('');
+    });
+
+    it('should allow safe tags', () => {
+      expect(sanitizeHtml('<b>bold</b> and <i>italic</i>')).toBe('<b>bold</b> and <i>italic</i>');
+    });
+
+    it('should remove unsafe tags', () => {
+      expect(sanitizeHtml('<script>alert("xss")</script><b>safe</b>')).toBe('<b>safe</b>');
     });
   });
 
@@ -43,7 +51,7 @@ describe('Sanitization Utilities', () => {
     });
 
     it('should remove dangerous characters', () => {
-      expect(sanitizeTopic('AI <script>for</script> retail')).toBe('AI scriptfor/script retail');
+      expect(sanitizeTopic('AI <script>for</script> retail')).toBe('AI  retail');
     });
 
     it('should throw on empty topic', () => {
@@ -76,7 +84,7 @@ describe('Sanitization Utilities', () => {
     });
 
     it('should remove dangerous characters', () => {
-      expect(sanitizeStyle('innovative<script>')).toBe('innovativescript');
+      expect(sanitizeStyle('innovative<script>')).toBe('innovative');
     });
   });
 

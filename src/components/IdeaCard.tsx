@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import type { Idea } from '@/types';
 import { useTypewriter } from '@/hooks/useTypewriter';
 

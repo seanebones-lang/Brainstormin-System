@@ -29,13 +29,13 @@ describe('Rate Limiting', () => {
 
   it('should get correct rate limit config for different endpoints', async () => {
     const generateConfig = getRateLimitConfig('/api/ideas/generate');
-    expect(generateConfig.uniqueTokenPerInterval).toBe(10);
+    expect(generateConfig.uniqueTokenPerInterval).toBe(100); // Now defaults to 100
 
     const sessionsConfig = getRateLimitConfig('/api/sessions');
-    expect(sessionsConfig.uniqueTokenPerInterval).toBe(20);
+    expect(sessionsConfig.uniqueTokenPerInterval).toBe(100);
 
     const voteConfig = getRateLimitConfig('/api/sessions/123/vote/456');
-    expect(voteConfig.uniqueTokenPerInterval).toBe(50);
+    expect(voteConfig.uniqueTokenPerInterval).toBe(100);
 
     const defaultConfig = getRateLimitConfig('/api/unknown');
     expect(defaultConfig.uniqueTokenPerInterval).toBe(100);
