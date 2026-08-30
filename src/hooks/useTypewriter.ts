@@ -19,9 +19,9 @@ export function useTypewriter(
   const { speed = 30, delay = 0, onComplete } = options;
   const [displayedText, setDisplayedText] = useState('');
   const [, setIsComplete] = useState(false);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const charIndexRef = useRef(0);
-  const delayTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const delayTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const reset = useCallback(() => {
     // Clear any existing timeouts
@@ -104,32 +104,9 @@ export function useTypewriterControl(
   const [displayedText, setDisplayedText] = useState('');
   const [isPlaying, setIsPlaying] = useState(true);
   const [isComplete, setIsComplete] = useState(false);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const charIndexRef = useRef(0);
-  const delayTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  const pause = useCallback(() => {
-    setIsPlaying(false);
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-      timeoutRef.current = null;
-    }
-  }, []);
-
-  const play = useCallback(() => {
-    if (!isComplete && !isPlaying) {
-      setIsPlaying(true);
-      continueTyping();
-    }
-  }, [isComplete, isPlaying]);
-
-  const reset = useCallback(() => {
-    pause();
-    setDisplayedText('');
-    setIsComplete(false);
-    charIndexRef.current = 0;
-    setIsPlaying(true);
-  }, [pause]);
+  const delayTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const continueTyping = useCallback(() => {
     if (!isPlaying || charIndexRef.current >= text.length) {
@@ -151,6 +128,29 @@ export function useTypewriterControl(
       }
     }
   }, [text, speed, isPlaying, onComplete]);
+
+  const pause = useCallback(() => {
+    setIsPlaying(false);
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+  }, []);
+
+  const play = useCallback(() => {
+    if (!isComplete && !isPlaying) {
+      setIsPlaying(true);
+      continueTyping();
+    }
+  }, [isComplete, isPlaying, continueTyping]);
+
+  const reset = useCallback(() => {
+    pause();
+    setDisplayedText('');
+    setIsComplete(false);
+    charIndexRef.current = 0;
+    setIsPlaying(true);
+  }, [pause]);
 
   useEffect(() => {
     reset();
@@ -186,7 +186,7 @@ export function useTypewriterControl(
       continueTyping();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isPlaying, isComplete, text]);
+  }, [isPlaying, isComplete, text, continueTyping]);
 
   return {
     displayedText,

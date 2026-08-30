@@ -71,7 +71,7 @@ class Logger {
     switch (entry.level) {
       case LogLevel.DEBUG:
       case LogLevel.INFO:
-        // Use console.log for debug/info (allowed in production via no-console rule)
+        // Use console.log for debug/info
         // eslint-disable-next-line no-console
         console.log(formatted);
         break;
